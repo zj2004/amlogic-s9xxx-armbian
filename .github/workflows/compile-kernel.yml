@@ -13,12 +13,12 @@ on:
       kernel_source:
         description: "Select the kernel source"
         required: false
-        default: "zj2004"
+        default: "zj2004/linux-6.1.y@br_rd3399"
         type: choice
         options:
           - unifreq
           - codesnas
-          - zj2004
+          - zj2004/linux-6.1.y@br_rd3399
       kernel_version:
         description: "Select kernel version"
         required: false
