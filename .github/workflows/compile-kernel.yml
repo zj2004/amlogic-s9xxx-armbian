@@ -13,15 +13,16 @@ on:
       kernel_source:
         description: "Select the kernel source"
         required: false
-        default: "ophub"
+        default: "zj2004/linux-6.1.y@br_sh21r"
         type: choice
         options:
           - unifreq
           - ophub
+          - zj2004/linux-6.1.y@br_sh21r
       kernel_version:
         description: "Select kernel version"
         required: false
-        default: "6.18.y"
+        default: "6.1.y"
         type: choice
         options:
           - all
@@ -79,14 +80,14 @@ on:
       kernel_sign:
         description: "Set the kernel custom signature"
         required: false
-        default: "-ophub"
+        default: "-zj2004"
         type: choice
         options:
           - -ophub
-          - -yourname
+          - -zj2004
 
 env:
-  TZ: Etc/UTC
+  TZ: Asia/Shanghai
 
 jobs:
   setup:
@@ -190,7 +191,7 @@ jobs:
             kernel-${{ inputs.kernel_toolchain }}-${{ matrix.kernel_version }}-
 
       - name: Compile the kernel [ ${{ matrix.kernel_version }} ]
-        uses: ophub/amlogic-s9xxx-armbian@main
+        uses: zj2004/amlogic-s9xxx-armbian@patch-sh21r
         if: ${{ steps.disk.outputs.status == 'success' && !cancelled() }}
         with:
           build_target: kernel
@@ -206,7 +207,7 @@ jobs:
           docker_image: ophub/armbian-${{ inputs.docker_image }}:arm64
 
       - name: Upload Kernel to Release
-        uses: ophub/upload-to-releases@main
+        uses: zj2004/upload-to-releases@main
         if: ${{ env.PACKAGED_STATUS == 'success' && !cancelled() }}
         with:
           tag: kernel_stable
