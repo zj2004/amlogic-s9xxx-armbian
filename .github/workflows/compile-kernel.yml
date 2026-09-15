@@ -13,12 +13,12 @@ on:
       kernel_source:
         description: "Select the kernel source"
         required: false
-        default: "zj2004/linux-6.1.y@br_sh21r"
+        default: "zj2004"
         type: choice
         options:
           - unifreq
           - ophub
-          - zj2004/linux-6.1.y@br_sh21r
+          - zj2004
       kernel_version:
         description: "Select kernel version"
         required: false
@@ -171,7 +171,7 @@ jobs:
         id: kernelhash
         run: |
           # Get the latest source hash from the kernel repository
-          api_url="https://api.github.com/repos/${{ inputs.kernel_source }}/linux-${{ matrix.kernel_version }}/git/ref/heads/main"
+          api_url="https://api.github.com/repos/${{ inputs.kernel_source }}/linux-${{ matrix.kernel_version }}/git/ref/heads/br_sh21r"
           source_hash=$(curl -fsSL -m 20 \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
