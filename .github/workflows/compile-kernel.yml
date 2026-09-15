@@ -191,6 +191,7 @@ jobs:
             kernel-${{ inputs.kernel_toolchain }}-${{ matrix.kernel_version }}-
 
       - name: Compile the kernel [ ${{ matrix.kernel_version }} ]
+        id: compile
         uses: zj2004/amlogic-s9xxx-armbian@patch-sh21r
         if: ${{ steps.disk.outputs.status == 'success' && !cancelled() }}
         with:
@@ -224,3 +225,8 @@ jobs:
             - 这些是主线 LTS（长期支持）内核，为 Armbian 和 OpenWrt 提供`稳定`的支持。
             - 适用于 `amlogic`，`rockchip`，`allwinner` 的大部分设备，具体可以参考仓库首页的说明。
             - 其他的 Rockchip 和 Allwinner 设备专用 BSP 内核可以在 [ophub/kernel](https://github.com/ophub/kernel) 仓库里下载使用。
+      - name: Debug compile step result
+        if: always()
+        run: |
+          echo "compile outcome: ${{ steps.compile.outcome }}"
+          echo "compile conclusion: ${{ steps.compile.conclusion }}"
