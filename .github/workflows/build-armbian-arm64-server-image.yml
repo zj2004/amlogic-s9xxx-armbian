@@ -418,6 +418,7 @@ jobs:
         run: |
           df -hT ${PWD}
           git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git build
+          mkdir -p /home/runner/work/_actions/zj2004/amlogic-s9xxx-armbian/patch-sh21r
           ln -sf /builder/build ${{ github.workspace }}/build
           ln -sf /builder/build /home/runner/work/_actions/zj2004/amlogic-s9xxx-armbian/patch-sh21r/build
           echo "status=success" >> ${GITHUB_OUTPUT}
