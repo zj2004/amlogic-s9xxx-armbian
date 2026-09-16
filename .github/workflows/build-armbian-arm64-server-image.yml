@@ -290,6 +290,7 @@ on:
         type: choice
         options:
           - ophub/kernel
+          - zj2004/linux-6.1.y
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
@@ -327,7 +328,7 @@ on:
       config_board:
         description: "Set the base Armbian board name."
         required: false
-        default: "sh21r-tv2.0"
+        default: "odroidn2"
 
 env:
   TZ: Asia/Shanghai
