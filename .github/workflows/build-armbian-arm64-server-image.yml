@@ -12,7 +12,7 @@ on:
       set_release:
         description: "Select OS Release."
         required: false
-        default: "all"
+        default: "bookworm"
         type: choice
         options:
           - all
@@ -23,7 +23,7 @@ on:
       armbian_board:
         description: "Select device board."
         required: false
-        default: "amlogic"
+        default: "sh21r"
         type: choice
         options:
           - allwinner
@@ -265,10 +265,11 @@ on:
           - zcube1-max
           - zk-r39a
           - zysj
+          - sh21r
       armbian_kernel:
         description: "Select kernel version."
         required: false
-        default: "6.12.y_6.18.y"
+        default: "6.1.y"
         type: choice
         options:
           - 5.10.y
@@ -285,10 +286,10 @@ on:
       kernel_repo:
         description: "Set the kernel repository."
         required: false
-        default: "ophub/kernel"
+        default: "zj2004/linux-6.1.y"
         type: choice
         options:
-          - ophub/kernel
+          - zj2004/linux-6.1.y
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
@@ -318,18 +319,18 @@ on:
       builder_name:
         description: "Set Armbian builder signature."
         required: false
-        default: "ophub"
+        default: "zj2004"
         type: choice
         options:
           - ophub
-          - angel
+          - zj2004
       config_board:
         description: "Set the base Armbian board name."
         required: false
-        default: "odroidn2"
+        default: "sh21r"
 
 env:
-  TZ: Etc/UTC
+  TZ: Asia/Shanghai
   ROOTFS_SCRIPT: compile-kernel/tools/script/docker/build_armbian_rootfs_file.sh
 
 jobs:
@@ -431,7 +432,7 @@ jobs:
 
           # Set the board name for the base Armbian image
           config_board="${{ inputs.config_board }}"
-          [[ -z "${config_board}" ]] && config_board="odroidn2"
+          [[ -z "${config_board}" ]] && config_board="sh21r"
 
           # Compile options reference: https://docs.armbian.com/Developer-Guide_Build-Options
           cd build/
@@ -459,7 +460,7 @@ jobs:
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Upload Armbian image to Release
-        uses: ophub/upload-to-releases@main
+        uses: zj2004/upload-to-releases@main
         if: ${{ steps.clean.outputs.status == 'success' && !cancelled() }}
         with:
           tag: ${{ env.build_tag }}
@@ -471,7 +472,7 @@ jobs:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Rebuild Armbian for target boards
-        uses: ophub/amlogic-s9xxx-armbian@main
+        uses: zj2004/amlogic-s9xxx-armbian@main
         if: ${{ steps.clean.outputs.status == 'success' && !cancelled() }}
         with:
           build_target: armbian
@@ -485,7 +486,7 @@ jobs:
           builder_name: ${{ inputs.builder_name }}
 
       - name: Upload rebuilt images to Release
-        uses: ophub/upload-to-releases@main
+        uses: zj2004/upload-to-releases@main
         if: ${{ env.PACKAGED_STATUS == 'success' && !cancelled() }}
         with:
           tag: ${{ env.build_tag }}
