@@ -23,7 +23,7 @@ on:
       armbian_board:
         description: "Select device board."
         required: false
-        default: "sh21r"
+        default: "sh21r-tv2.0"
         type: choice
         options:
           - allwinner
@@ -265,11 +265,11 @@ on:
           - zcube1-max
           - zk-r39a
           - zysj
-          - sh21r
+          - sh21r-tv2.0
       armbian_kernel:
         description: "Select kernel version."
         required: false
-        default: "6.1.y"
+        default: "6.18.y"
         type: choice
         options:
           - 5.10.y
@@ -286,10 +286,10 @@ on:
       kernel_repo:
         description: "Set the kernel repository."
         required: false
-        default: "zj2004/linux-6.1.y"
+        default: "ophub/kernel"
         type: choice
         options:
-          - zj2004/linux-6.1.y
+          - ophub/kernel
       kernel_usage:
         description: "Set the tags of the stable kernel."
         required: false
@@ -327,7 +327,7 @@ on:
       config_board:
         description: "Set the base Armbian board name."
         required: false
-        default: "sh21r"
+        default: "sh21r-tv2.0"
 
 env:
   TZ: Asia/Shanghai
@@ -418,9 +418,9 @@ jobs:
         run: |
           df -hT ${PWD}
           git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git build
-          mkdir -p /home/runner/work/_actions/zj2004/amlogic-s9xxx-armbian/patch-sh21r
+
           ln -sf /builder/build ${{ github.workspace }}/build
-          ln -sf /builder/build /home/runner/work/_actions/zj2004/amlogic-s9xxx-armbian/patch-sh21r/build
+          ln -sf /builder/build /home/runner/work/_actions/ophub/amlogic-s9xxx-armbian/main/build
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Compile Armbian [ ${{ matrix.release }} ]
@@ -433,7 +433,7 @@ jobs:
 
           # Set the board name for the base Armbian image
           config_board="${{ inputs.config_board }}"
-          [[ -z "${config_board}" ]] && config_board="sh21r"
+          [[ -z "${config_board}" ]] && config_board="sh21r-tv2.0"
 
           # Compile options reference: https://docs.armbian.com/Developer-Guide_Build-Options
           cd build/
@@ -473,7 +473,7 @@ jobs:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Rebuild Armbian for target boards
-        uses: zj2004/amlogic-s9xxx-armbian@main
+        uses: zj2004/amlogic-s9xxx-armbian@patch-sh21r
         if: ${{ steps.clean.outputs.status == 'success' && !cancelled() }}
         with:
           build_target: armbian
