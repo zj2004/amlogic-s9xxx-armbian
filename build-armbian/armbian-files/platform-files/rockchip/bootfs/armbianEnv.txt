@@ -1,6 +1,7 @@
 verbosity=1
 bootlogo=false
 fdtfile=rockchip/rk3399-sh21r.dtb
+console=ttyS2,1500000
 rootdev=/dev/mmcblk0p2
 rootfstype=ext4
 rootflags=rw,errors=remount-ro
