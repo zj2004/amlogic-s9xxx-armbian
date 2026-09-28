@@ -23,7 +23,7 @@ on:
       armbian_board:
         description: "Select device board."
         required: false
-        default: "sh21r-tv2.0"
+        default: "r08"
         type: choice
         options:
           - allwinner
@@ -265,7 +265,7 @@ on:
           - zcube1-max
           - zk-r39a
           - zysj
-          - sh21r-tv2.0
+          - r08
       armbian_kernel:
         description: "Select kernel version."
         required: false
@@ -434,7 +434,7 @@ jobs:
 
           # Set the board name for the base Armbian image
           config_board="${{ inputs.config_board }}"
-          [[ -z "${config_board}" ]] && config_board="sh21r-tv2.0"
+          [[ -z "${config_board}" ]] && config_board="r08"
 
           # Compile options reference: https://docs.armbian.com/Developer-Guide_Build-Options
           cd build/
@@ -474,7 +474,7 @@ jobs:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Rebuild Armbian for target boards
-        uses: zj2004/amlogic-s9xxx-armbian@patch-sh21r
+        uses: zj2004/amlogic-s9xxx-armbian@patch-r08
         if: ${{ steps.clean.outputs.status == 'success' && !cancelled() }}
         with:
           build_target: armbian
