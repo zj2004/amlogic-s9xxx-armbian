@@ -19,7 +19,7 @@
 #
 # error_msg       : Output error message
 # update_script   : Update compilation scripts
-# clean_tmp       : Clear temporary files
+# output_clean    : Clear the kernel source and output files
 # help_info       : Display help information
 #
 #=============================== Set make environment variables ===============================
@@ -54,15 +54,13 @@ error_msg() {
 }
 
 update_script() {
-    echo -e "${STEPS} Updating kernel compilation scripts..."
-
     # Install git
-    echo -e "${INFO} Installing update dependencies..."
+    echo -e "${STEPS} Installing update dependencies..."
     sudo apt-get -qq update
     [[ -z "$(dpkg -l | awk '{print $2}' | grep -w "^git$")" ]] && sudo apt-get install -y git
 
     # Download the latest scripts from the repository
-    echo -e "${INFO} Fetching latest scripts from repository..."
+    echo -e "${STEPS} Syncing latest scripts from repository..."
     git_tmp_path="$(mktemp -d)"
     # Ensure tmp dir is removed on any exit path (success / error / Ctrl-C)
     trap '[[ -n "${git_tmp_path}" && -d "${git_tmp_path}" ]] && rm -rf "${git_tmp_path}" 2>/dev/null' EXIT INT TERM
@@ -100,21 +98,24 @@ update_script() {
     [[ "${?}" -ne "0" ]] && error_msg "Failed to sync scripts from [ ${script_repo} ]."
     cp -f --no-preserve=ownership ${script_name} ${compile_script}
     chmod +x ${compile_script}
+    [[ "${?}" -ne "0" ]] && error_msg "Failed to sync compilation scripts."
+    echo -e "${SUCCESS} Compilation scripts synced successfully."
 
     # Clean up temporary files
+    sync && sleep 3
     rm -rf ${git_tmp_path} 2>/dev/null
 
     # Install compilation dependencies
-    echo -e "${INFO} Installing compilation dependencies..."
+    echo -e "${STEPS} Installing compilation dependencies..."
     sudo apt-get install -y $(cat ${script_path}/armbian-compile-kernel-depends)
     [[ "${?}" -ne "0" ]] && error_msg "Failed to install dependencies."
 
     sync && sleep 3
-    echo -e "${SUCCESS} Compilation scripts updated successfully."
+    echo -e "${SUCCESS} Compilation dependencies installed successfully."
     exit 0
 }
 
-clean_tmp() {
+output_clean() {
     cd ${make_path}
     echo -e "${STEPS} Cleaning up kernel source and output files..."
 
@@ -139,21 +140,22 @@ help_info() {
     -r : Repository   Set the kernel source code repository, such as [ -r owner/repo@branch ]
     -p : AutoPatch    Sets whether to use custom kernel patches, such as [ -p true ], Optional: [ true/false ]
     -z : Compress     Set the compression format used for initrd in the kernel, such as [ -z xz ], Optional: [ xz/gzip/zstd/lzma ]
-    -d : DeleteSource Set whether to delete the kernel source code after compilation, such as [ -d true ], Optional: [ true/false ]
     -s : SilentLog    Set whether to use silent mode to reduce log output, such as [ -s true ], Optional: [ true/false ]
     -l : EnableLog    Set whether to output logs to a file, such as [ -l true ], Optional: [ true/false ]
     -c : CcacheClear  Set whether to clear ccache before compiling, such as [ -c true ], Optional: [ true/false ]
+    -d : DeleteSource Set whether to delete the kernel source code after compilation, such as [ -d true ], Optional: [ true/false ]
 
 02. Script assist functions:
     Command: armbian-kernel -u
     -u : Update       Update the local compile script to the latest version.
-    -c : Clear        Clear the local kernel source and generated files.
+    -o : OutputClean  Clear the kernel source and output files.
 
 ======================================================================================================================================
 EOF
     exit 0
 }
 
+echo -e "${STEPS} Welcome to the Armbian kernel compilation script."
 # Check script permission, only supports running on Armbian (aarch64)
 [[ "$(id -u)" == "0" ]] || error_msg "Please run this script as root: [ sudo $0 ]"
 [[ "${arch_info}" == "aarch64" ]] || error_msg "This script only supports running on Armbian (aarch64) systems."
@@ -164,9 +166,9 @@ remaining_space="$(df -Tk ${make_path} | tail -n1 | awk '{print $5}' | echo $(($
 
 # Execute script assist functions
 case "${1}" in
-    -u | --update) update_script ;;
-    -c | --clean)  clean_tmp ;;
-    -h | --help)   help_info ;;
+    -u | --update)        update_script ;;
+    -o | --output-clean)  output_clean ;;
+    --help)               help_info ;;
     *)
         [[ -f "${compile_script}" ]] || error_msg "Please run [ armbian-kernel -u ] to update scripts."
         cd ${make_path} && sudo ${compile_script} "${@}"
