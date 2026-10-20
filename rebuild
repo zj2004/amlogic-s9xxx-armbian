@@ -78,12 +78,12 @@ board_release_file="etc/armbian-board-release.conf"
 ophub_release_file="etc/ophub-release"
 
 # U-BOOT files download repository
-uboot_repo="https://github.com/ophub/u-boot"
+uboot_repo="https://github.com/zj2004/u-boot"
 # Firmware files download repository
 firmware_repo="https://github.com/ophub/firmware"
 
 # Set the kernel download repository from github.com
-kernel_repo="https://github.com/ophub/kernel"
+kernel_repo="https://github.com/zj2004/kernel"
 # Set the tags(kernel_xxx) of the default kernel that can be replaced via the [ -u ] parameter
 default_tags="stable"
 kernel_usage=""
@@ -100,7 +100,7 @@ auto_kernel="true"
 # Initialize the kernel array
 declare -A tags_list
 
-# Amlogic u-boot files: https://github.com/ophub/u-boot/tree/main/u-boot/amlogic/overload
+# Amlogic u-boot files: https://github.com/zj2004/u-boot/tree/main/u-boot/amlogic/overload
 # Array entries omit the "u-boot-" prefix of the file name (e.g. p201.bin = u-boot-p201.bin)
 uboot_meson_gxl=("p201.bin" "p212.bin" "s905x-s912.bin" "n1.bin" "r3300l.bin" "s905x-s905lb.bin")
 uboot_meson_gxm=("p212.bin" "s905x-s912.bin" "zyxq.bin")
