@@ -37,6 +37,7 @@ on:
           - last50
           - r08
           - sh21r-tv2.0
+          - rd3399
       armbian_kernel:
         description: "Select kernel version."
         required: false
